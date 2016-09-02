@@ -1,0 +1,16 @@
+{
+  "name": "artproject",
+  "version": "1.0.0",
+  "description": "my art project",
+  "main": "index.js",
+  "scripts": {
+    "test": "testme"
+  },
+  "author": "Lars F",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "request": "^2.74.0"
+  }
+}
