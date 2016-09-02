@@ -3,7 +3,7 @@ var express = require('express'),
     request = require('request'),
     fs      = require('fs'),
     app     = express(),
-    konst   = require('./public/konst.json');
+    konst   = require('./konst.json');
 
 app.use('/static', express.static(__dirname + '/public'));
 
