@@ -1,6 +1,7 @@
 var express = require('express'),
     exphbs  = require('express-handlebars'),
     request = require('request'),
+    asynchr = require('async'),
     fs      = require('fs'),
     app     = express(),
     konst   = require('./konst.json');
@@ -26,25 +27,26 @@ app.get('/', function (req, res) {
     }
   }
 
-  for (var i = 0; i < imageAddresses.length; i++) {
+  var logit = true;
 
-    var arr = imageAddresses[i].split("/");
-    var imageName = arr[arr.length - 1];
+  var q = asynchr.queue(function(task, done) {
+    request(task.url, { encoding: 'binary' }, function(err, res, body) {
+      if (err) return done(err);
+      if (res.statusCode != 200) return done(res.statusCode);
 
-    // Don't try to save all images yet. Make it work first.
-    if (i > 2) break;
-
-    //console.log(imageNames[i]);
-    //console.log(imageName);
-
-    request(imageAddresses[i], function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        fs.writeFile('./images/' + imageName, body, 'binary', function(err) {});
-      }
-      else if (error) {
-        console.log(error);
-      }
+      var arr = task.url.split("/");
+      var imageName = arr[arr.length - 1];
+      var saveName = './images/' + imageName;
+      fs.writeFile(saveName, body, 'binary', function(err) {});
+      done();
     });
+  });
+
+  //Only trying a few images at a time.
+  //for (var i = 0; i < imageAddresses.length; i++) {
+  for (var i = 0; i < 3; i++) {
+    console.log(imageAddresses[i]);
+    q.push({ url: imageAddresses[i]});
   }
 
   res.send(imageAddresses);
