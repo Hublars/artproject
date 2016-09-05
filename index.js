@@ -7,6 +7,17 @@ var express = require('express'),
     app     = express(),
     konst   = require('./konst.json');
 
+var post_options = {
+  url: 'https://api.artworksapp.com/staging/artworks/',
+  headers: {
+    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1N2IzMDNiNTE4MjM2MDYyNGYwZGNmOWEiLCJpYXQiOjE0NzI3Mzg0Mjh9.LZ2IqfUKA6kSJnR2OYIiJ-OA6NdAJFV_se9Y22vDoz4',
+    'Content-Type': 'application/json'
+  },
+  json: {
+    'user._id': '57b303b5182360624f0dcf9a'
+  }
+}
+
 app.use('/static', express.static(__dirname + '/public'));
 
 app.engine('hbs', exphbs({
@@ -21,52 +32,14 @@ app.get('/', function (req, res) {
   // Uncomment this to dowload images.
   //downloadImages();
 
-  var post_options = {
-    url: 'https://api.artworksapp.com/staging/artworks/',
-    headers: {
-      'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1N2IzMDNiNTE4MjM2MDYyNGYwZGNmOWEiLCJpYXQiOjE0NzI3Mzg0Mjh9.LZ2IqfUKA6kSJnR2OYIiJ-OA6NdAJFV_se9Y22vDoz4',
-      'Content-Type': 'application/json'
-    },
-    json: {
-      title: 'Hello Art',
-      'user._id': '57b303b5182360624f0dcf9a',
-      images: [
-        {
-          src: '',
-          color: 'red',
-          width: 500,
-          height: 500
-        }
-      ]
-    }
-  }
+  postData();
 
-  var q = asynchr.queue(function(task, done) {
+  res.send(konst);
+  //res.render('home');
+});
 
-    request.post(task.options, function(error, response, body) {
-
-      if (!error && response.statusCode == 200) {
-        console.log('Success!');
-        console.log(body);
-      }
-      else {
-        console.log('Error!');
-        console.log(body);
-      }
-
-      done();
-    });
-  });
-
-  //for (var i = 0; i < konst.length; i++) {
-  for (var i = 0; i < 3; i++) { // Trying a few at a time.
-    var p_options = clone(post_options);
-    p_options.json.title = konst[i].titel;
-    q.push({ options: p_options });
-  }
-
-  //res.send(imageAddresses);
-  res.render('home');
+app.listen(3000, function() {
+  console.log('App listening on port 3000');
 });
 
 function downloadImages() {
@@ -101,6 +74,58 @@ function downloadImages() {
     }
 }
 
-app.listen(3000, function() {
-  console.log('App listening on port 3000');
-});
+function postData() {
+
+    var q = asynchr.queue(function(task, done) {
+
+      request.post(task.options, function(error, response, body) {
+
+        if (!error && response.statusCode == 200) {
+          console.log('Success!');
+          console.log(body);
+        }
+        else {
+          console.log('Error!');
+          console.log(body);
+        }
+
+        done();
+      });
+    });
+
+    //for (var i = 0; i < konst.length; i++) {
+    for (var i = 0; i < 3; i++) { // Trying a few at a time.
+
+      var p_options = clone(post_options);
+
+      p_options.json.title = konst[i].titel;
+      p_options.json.artist = { name: konst[i].konstnar ? konst[i].konstnar : 'Namn saknas' };
+      p_options.json.year = konst[i].ar;
+      p_options.json.medium = konst[i].material;
+
+      p_options.json.framed = false;
+      p_options.json.purchasable = false;
+      p_options.json.status = 'not-for-sale';
+      p_options.json.gallery = { '$oid': '57b303b5182360624f0dcf9b' };
+      p_options.json.shows = [];
+
+      p_options.json.about = null;
+      p_options.json.price = null;
+      p_options.json.priceCurrency = null;
+      p_options.json.width = null;
+      p_options.json.height = null;
+      p_options.json.style = null;
+
+      // Find the addresses for the images to be uploaded.
+      var uploadImages = [];
+      for (var j = 0; j < konst[i].media.length; j++) {
+
+        var arr = konst[i].media[j].split("/");
+        var imageName = arr[arr.length - 1];
+        var uploadName = './images/' + imageName;
+
+      }
+
+      q.push({ options: p_options });
+    }
+}
