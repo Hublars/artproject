@@ -94,7 +94,7 @@ function postData() {
     });
 
     //for (var i = 0; i < konst.length; i++) {
-    for (var i = 0; i < 3; i++) { // Trying a few at a time.
+    for (var i = 0; i < 1; i++) { // Trying a few at a time.
 
       var p_options = clone(post_options);
 
@@ -118,14 +118,27 @@ function postData() {
 
       // Find the addresses for the images to be uploaded.
       var uploadImages = [];
-      for (var j = 0; j < konst[i].media.length; j++) {
+      //for (var j = 0; j < konst[i].media.length; j++) {
+      for (var j = 0; j < 1; j++) {
 
         var arr = konst[i].media[j].split("/");
         var imageName = arr[arr.length - 1];
         var uploadName = './images/' + imageName;
 
+        var encodedImage = base64_encode(uploadName);
+
+        p_options.json.image = encodedImage;
+
+        q.push({ options: p_options });
       }
 
-      q.push({ options: p_options });
+      //q.push({ options: p_options });
     }
+}
+
+function base64_encode(file) {
+
+  var bitmap = fs.readFileSync(file);
+
+  return new Buffer(bitmap).toString('base64');
 }
