@@ -35,7 +35,7 @@ app.get('/', function (req, res) {
   postData();
 
   res.send(konst);
-  //res.render('home');
+  res.render('home');
 });
 
 app.listen(3000, function() {
@@ -46,8 +46,8 @@ function downloadImages() {
 
     // Collect addresses for the images in this array.
     var imageAddresses = [];
-    //for (var i = 0; i < konst.length; i++) {
-    for (var i = 0; i < 3; i++) { // Trying a few at a time.
+    for (var i = 0; i < konst.length; i++) {
+    //for (var i = 0; i < 3; i++) { // Trying a few at a time.
 
       for (var j = 0; j < konst[i].media.length; j++) {
 
@@ -94,7 +94,7 @@ function postData() {
     });
 
     //for (var i = 0; i < konst.length; i++) {
-    for (var i = 0; i < 1; i++) { // Trying a few at a time.
+    for (var i = 0; i < 3; i++) { // Trying a few at a time.
 
       var p_options = clone(post_options);
 
@@ -118,21 +118,25 @@ function postData() {
 
       // Find the addresses for the images to be uploaded.
       var uploadImages = [];
-      //for (var j = 0; j < konst[i].media.length; j++) {
-      for (var j = 0; j < 1; j++) {
+      for (var j = 0; j < konst[i].media.length; j++) {
 
-        var arr = konst[i].media[j].split("/");
+        var arr = konst[i].media[j].split('/');
         var imageName = arr[arr.length - 1];
         var uploadName = './images/' + imageName;
 
         var encodedImage = base64_encode(uploadName);
 
-        p_options.json.image = encodedImage;
+        arr = imageName.split('.');
+        var pictureFormat = arr[arr.length - 1];
 
-        q.push({ options: p_options });
+        p_options.json.image = {
+          contentType: 'image/' + pictureFormat,
+          URI: 'data:image/jpg;base64,' + encodedImage,
+          fileName: imageName
+        }
       }
 
-      //q.push({ options: p_options });
+      q.push({ options: p_options });
     }
 }
 
