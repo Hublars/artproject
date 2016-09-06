@@ -35,7 +35,7 @@ app.get('/', function (req, res) {
   postData();
 
   res.send(konst);
-  res.render('home');
+  //res.render('home');
 });
 
 app.listen(3000, function() {
