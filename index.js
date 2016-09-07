@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
   //downloadImages();
 
   // Uncomment this to post artworks to the api.
-  postData();
+  //postData();
 
   // Uncomment this to write all artworks with multiple images to their own file ( flerabilder.json ).
   //writeMultipleImageArtworks();
