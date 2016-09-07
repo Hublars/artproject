@@ -32,7 +32,11 @@ app.get('/', function (req, res) {
   // Uncomment this to dowload images.
   //downloadImages();
 
-  postData();
+  // Uncomment this to post artworks to the api.
+  //postData();
+
+  // Uncomment this to write all artworks with multiple images to their own file.
+  writeMultipleImageArtworks();
 
   res.send(konst);
   //res.render('home');
@@ -47,7 +51,6 @@ function downloadImages() {
     // Collect addresses for the images in this array.
     var imageAddresses = [];
     for (var i = 0; i < konst.length; i++) {
-    //for (var i = 0; i < 3; i++) { // Trying a few at a time.
 
       for (var j = 0; j < konst[i].media.length; j++) {
 
@@ -93,8 +96,7 @@ function postData() {
       });
     });
 
-    //for (var i = 0; i < konst.length; i++) {
-    for (var i = 0; i < 3; i++) { // Trying a few at a time.
+    for (var i = 0; i < konst.length; i++) {
 
       var p_options = clone(post_options);
 
@@ -116,24 +118,20 @@ function postData() {
       p_options.json.height = null;
       p_options.json.style = null;
 
-      // Find the addresses for the images to be uploaded.
-      var uploadImages = [];
-      for (var j = 0; j < konst[i].media.length; j++) {
+      // Take only the first image in media.
+      var arr = konst[i].media[0].split('/');
+      var imageName = arr[arr.length - 1];
+      var uploadName = './images/' + imageName;
 
-        var arr = konst[i].media[j].split('/');
-        var imageName = arr[arr.length - 1];
-        var uploadName = './images/' + imageName;
+      var encodedImage = base64_encode(uploadName);
 
-        var encodedImage = base64_encode(uploadName);
+      arr = imageName.split('.');
+      var pictureFormat = arr[arr.length - 1];
 
-        arr = imageName.split('.');
-        var pictureFormat = arr[arr.length - 1];
-
-        p_options.json.image = {
-          contentType: 'image/' + pictureFormat,
-          URI: 'data:image/jpg;base64,' + encodedImage,
-          fileName: imageName
-        }
+      p_options.json.image = {
+        contentType: 'image/' + pictureFormat,
+        URI: 'data:image/jpg;base64,' + encodedImage,
+        fileName: imageName
       }
 
       q.push({ options: p_options });
@@ -145,4 +143,12 @@ function base64_encode(file) {
   var bitmap = fs.readFileSync(file);
 
   return new Buffer(bitmap).toString('base64');
+}
+
+function writeMultipleImageArtworks() {
+
+  for (var i = 0; i < konst.length; i++) {
+
+    console.log(konst[i].media.length);
+  }
 }
