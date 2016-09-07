@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
   //downloadImages();
 
   // Uncomment this to post artworks to the api.
-  //postData();
+  postData();
 
   // Uncomment this to write all artworks with multiple images to their own file ( flerabilder.json ).
   //writeMultipleImageArtworks();
@@ -100,8 +100,24 @@ function postData() {
 
       var p_options = clone(post_options);
 
+      var artist = 'Namn saknas';
+
+      if (konst[i].konstnar) {
+
+        nameArray = konst[i].konstnar.split(',');
+
+        // If konst[i].konstnar konsists of two parts divided by a ',' we'll assume it's the artists first and last name.
+        if (nameArray.length == 2) {
+
+          artist = nameArray[1].trim() + " " + nameArray[0];
+        }
+        else {
+          artist = konst[i].konstnar;
+        }
+      }
+
+      p_options.json.artist = { name: artist };
       p_options.json.title = konst[i].titel;
-      p_options.json.artist = { name: konst[i].konstnar ? konst[i].konstnar : 'Namn saknas' };
       p_options.json.year = konst[i].ar;
       p_options.json.medium = konst[i].material;
 
