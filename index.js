@@ -35,8 +35,8 @@ app.get('/', function (req, res) {
   // Uncomment this to post artworks to the api.
   //postData();
 
-  // Uncomment this to write all artworks with multiple images to their own file.
-  writeMultipleImageArtworks();
+  // Uncomment this to write all artworks with multiple images to their own file ( flerabilder.json ).
+  //writeMultipleImageArtworks();
 
   res.send(konst);
   //res.render('home');
@@ -147,8 +147,17 @@ function base64_encode(file) {
 
 function writeMultipleImageArtworks() {
 
+  var art = [];
+
   for (var i = 0; i < konst.length; i++) {
 
-    console.log(konst[i].media.length);
+    if(konst[i].media.length > 1) {
+      art.push(konst[i]);
+    }
   }
+
+  fs.writeFile('./flerabilder.json', JSON.stringify(art), function(err) {
+
+    if (err) return console.log(err);
+  });
 }
